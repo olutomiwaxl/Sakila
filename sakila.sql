@@ -2,25 +2,43 @@ USE sakila;
 -- 1a. Display the first and last names of all actors from the table actor.
 SELECT first_name , last_name FROM actor;
 -- Display the first and last name of each actor in a single column in upper case letters. Name the column Actor Name.
+SELECT concat(UPPER(first_name), ' ', UPPER(last_name)) AS 'Actor Name' 
+FROM actor;
 
 -- You need to find the ID number, first name, and last name of an actor, of whom you know only the first name, "Joe." What is one query would you use to obtain this information?
-
+SELECT actor_id, first_name , last_name FROM actor
+WHERE first_name = "Joe" ;
 -- Find all actors whose last name contain the letters GEN:
+SELECT * FROM actor WHERE last_name LIKE "%GEN%";
 
 -- Find all actors whose last names contain the letters LI. This time, order the rows by last name and first name, in that order:
-
+SELECT last_name, first_name  FROM actor WHERE last_name LIKE "%LI%";
 -- using IN display the country_id and country columns of the following countries: Afghanistan, Bangladesh, and China:
-
+SELECT * FROM COUNTRY;
+SELECT country_id, country FROM country
+WHERE country IN (Afghanistan,Bangladesh,China);
 
 -- You want to keep a description of each actor. You don't think you will be performing queries on a description, so create a column in the table actor named description and use the data type BLOB (Make sure to research the type BLOB, as the difference between it and VARCHAR are significant).
+ALTER TABLE `sakila`.`actor` 
+ADD COLUMN `description` BLOB NULL AFTER `last_update`;
 
 	
 -- Very quickly you realize that entering descriptions for each actor is too much effort. Delete the description column.
+ALTER TABLE `sakila`.`actor` 
+DROP COLUMN `description`;
 
 
 -- List the last names of actors, as well as how many actors have that last name.
+SELECT last_name, count(last_name) as last_name_count
+FROM actor
+GROUP BY last_name
+ORDER BY last_name ASC;
 
 -- List last names of actors and the number of actors who have that last name, but only for names that are shared by at least two actors
+SELECT last_name, count(last_name) as last_name_count
+FROM actor
+GROUP BY last_name
+HAVING count(last_name) >= 2;
 
 -- The actor HARPO WILLIAMS was accidentally entered in the actor table as GROUCHO WILLIAMS. Write a query to fix the record.
 
