@@ -14,9 +14,8 @@ SELECT * FROM actor WHERE last_name LIKE "%GEN%";
 -- Find all actors whose last names contain the letters LI. This time, order the rows by last name and first name, in that order:
 SELECT last_name, first_name  FROM actor WHERE last_name LIKE "%LI%";
 -- using IN display the country_id and country columns of the following countries: Afghanistan, Bangladesh, and China:
-SELECT * FROM COUNTRY;
 SELECT country_id, country FROM country
-WHERE country IN (Afghanistan,Bangladesh,China);
+WHERE country IN ("Afghanistan","Bangladesh","China");
 
 -- You want to keep a description of each actor. You don't think you will be performing queries on a description, so create a column in the table actor named description and use the data type BLOB (Make sure to research the type BLOB, as the difference between it and VARCHAR are significant).
 ALTER TABLE `sakila`.`actor` 
@@ -31,8 +30,8 @@ DROP COLUMN `description`;
 -- List the last names of actors, as well as how many actors have that last name.
 SELECT last_name, count(last_name) as last_name_count
 FROM actor
-GROUP BY last_name
-ORDER BY last_name ASC;
+GROUP BY last_name;
+
 
 -- List last names of actors and the number of actors who have that last name, but only for names that are shared by at least two actors
 SELECT last_name, count(last_name) as last_name_count
@@ -41,26 +40,59 @@ GROUP BY last_name
 HAVING count(last_name) >= 2;
 
 -- The actor HARPO WILLIAMS was accidentally entered in the actor table as GROUCHO WILLIAMS. Write a query to fix the record.
+UPDATE actor
+SET first_name = "HARPO"
+WHERE first_name = "GROUCHO" AND last_name = "WILLIAMS";
 
 -- Perhaps we were too hasty in changing GROUCHO to HARPO. It turns out that GROUCHO was the correct name after all! In a single query, if the first name of the actor is currently HARPO, change it to GROUCHO.
+UPDATE actor
+SET first_name = "GROUCHO"
+WHERE first_name = "HARPO";
 
 -- You cannot locate the schema of the address table. Which query would you use to re-create it?
-
-
-
-
+CREATE SCHEMA address;
 
 -- Use JOIN to display the first and last names, as well as the address, of each staff member. Use the tables staff and address:
+SELECT staff.first_name , staff.last_name, address.address
+FROM staff
+INNER JOIN address ON 
+staff.address_id=address.address_id;
 
 -- Use JOIN to display the total amount rung up by each staff member in August of 2005. Use tables staff and payment.
+SELECT staff.staff_id, staff.first_name ,
+staff.last_name, SUM(payment.amount) 
+FROM staff 
+INNER JOIN payment ON 
+staff.staff_id=payment.staff_id WHERE payment.payment_date LIKE "2005-08%"
+GROUP BY staff_id, first_name, last_name;
 
+ 
 --  List each film and the number of actors who are listed for that film. Use tables film_actor and film. Use inner join.
+SELECT film.title, COUNT(film_actor.actor_id) AS number_of_actors
+FROM film
+INNER JOIN film_actor ON 
+film.film_id=film_actor.film_id
+GROUP BY film.title;
+
+
 
 -- How many copies of the film Hunchback Impossible exist in the inventory system?
+SELECT film.title , COUNT(inventory.inventory_id) AS inventory
+FROM film
+INNER JOIN inventory ON 
+film.film_id=inventory.film_id WHERE film.title =  "Hunchback Impossible"
+GROUP BY film.title;
+
 
 -- Using the tables payment and customer and the JOIN command, list the total paid by each customer. List the customers alphabetically by last name:
-
-
+select * from payment;
+SELECT customer.customer_id, customer.first_name, 
+customer.last_name, SUM(payment.amount) AS total_paid
+FROM payment
+INNER JOIN customer ON 
+payment.customer_id=customer.customer_id 
+GROUP BY customer.customer_id
+ORDER BY last_name ASC;
 
 
 
