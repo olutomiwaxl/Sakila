@@ -85,7 +85,7 @@ GROUP BY film.title;
 
 
 -- Using the tables payment and customer and the JOIN command, list the total paid by each customer. List the customers alphabetically by last name:
-select * from payment;
+
 SELECT customer.customer_id, customer.first_name, 
 customer.last_name, SUM(payment.amount) AS total_paid
 FROM payment
@@ -97,24 +97,113 @@ ORDER BY last_name ASC;
 
 
 -- The music of Queen and Kris Kristofferson have seen an unlikely resurgence. As an unintended consequence, films starting with the letters K and Q have also soared in popularity. Use subqueries to display the titles of movies starting with the letters K and Q whose language is English.
+SELECT title FROM film
+WHERE title like "K%" or title like "Q%" 
+and (SELECT language_id FROM language WHERE name = 'English');
 
 --  Use subqueries to display all actors who appear in the film Alone Trip.
 
 
+
+
+
+
 -- You want to run an email marketing campaign in Canada, for which you will need the names and email addresses of all Canadian customers. Use joins to retrieve this information.
+SELECT customer.first_name, customer.last_name, 
+customer.email
+FROM customer
+INNER JOIN address ON 
+customer.address_id=address.address_id
+INNER JOIN city ON address.city_id=city.city_id
+INNER JOIN country ON city.country_id=country.country_id
+WHERE country.country = "Canada";
 
 --  Sales have been lagging among young families, and you wish to target all family movies for a promotion. Identify all movies categorized as family films.
 
+SELECT  film.title
+FROM film
+INNER JOIN film_category ON 
+film.film_id=film_category.film_id
+INNER JOIN category ON 
+film_category.category_id=category.category_id
+WHERE category.name = "Family";
+
 --  Display the most frequently rented movies in descending order.
+
+SELECT  MAX(film.title)
+FROM film
+INNER JOIN inventory ON 
+film.film_id=inventory.film_id
+INNER JOIN rental ON 
+inventory.inventory_id=rental.inventory_id;
+
 
 --  Write a query to display how much business, in dollars, each store brought in.
 
+SELECT  store.store_id, SUM(payment.amount)
+FROM store
+INNER JOIN staff ON 
+store.store_id=staff.store_id
+INNER JOIN payment ON 
+staff.staff_id=payment.staff_id
+GROUP BY store.store_id
+;
 -- Write a query to display for each store its store ID, city, and country.
 
+SELECT  store.store_id, city.city ,country.country
+FROM store
+INNER JOIN address ON 
+store.address_id=address.address_id
+INNER JOIN city ON 
+address.city_id=city.city_id
+INNER JOIN country ON 
+city.country_id=country.country_id;
+
 --  List the top five genres in gross revenue in descending order. (Hint: you may need to use the following tables: category, film_category, inventory, payment, and rental.)
+select * from payment;
+SELECT  category.name,  sum(payment.amount) AS amount
+FROM category
+INNER JOIN film_category ON 
+category.category_id=film_category.category_id
+INNER JOIN inventory ON 
+film_category.film_id=inventory.film_id
+INNER JOIN rental ON 
+inventory.inventory_id=rental.inventory_id
+INNER JOIN payment ON
+rental.customer_id=payment.customer_id
+GROUP BY category.name
+ORDER BY amount DESC;
 
---  In your new role as an executive, you would like to have an easy way of viewing the Top five genres by gross revenue. Use the solution from the problem above to create a view. If you haven't solved 7h, you can substitute another query to create a view.
-
+--  In your new role as an executive, you would like to have an easy way of viewing the Top five genres by gross revenue. 
+CREATE VIEW top_five_genres AS 
+SELECT  category.name, sum(payment.amount) AS amount
+FROM category
+INNER JOIN film_category ON 
+category.category_id=film_category.category_id
+INNER JOIN inventory ON 
+film_category.film_id=inventory.film_id
+INNER JOIN rental ON 
+inventory.inventory_id=rental.inventory_id
+INNER JOIN payment ON
+rental.customer_id=payment.customer_id
+GROUP BY category.name
+ORDER BY amount DESC
+LIMIT 5;
 -- How would you display the view that you created in 8a?
-
+SELECT * FROM top_five_genres ;
 -- You find that you no longer need the view top_five_genres. Write a query to delete it.
+DROP VIEW top_five_genres;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
