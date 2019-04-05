@@ -103,6 +103,20 @@ and (SELECT language_id FROM language WHERE name = 'English');
 
 --  Use subqueries to display all actors who appear in the film Alone Trip.
 
+SELECT
+   actor.last_name, actor.first_name
+FROM
+   film_actor
+       INNER JOIN
+   actor ON film_actor.actor_id = actor.actor_id
+WHERE
+   film_actor.film_id = (SELECT
+           film_id
+       FROM
+           film
+       WHERE
+           title = 'Alone Trip')
+ORDER BY actor.last_name , actor.first_name;
 
 
 
