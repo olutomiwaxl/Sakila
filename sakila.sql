@@ -50,7 +50,7 @@ SET first_name = "GROUCHO"
 WHERE first_name = "HARPO";
 
 -- You cannot locate the schema of the address table. Which query would you use to re-create it?
-CREATE SCHEMA address;
+SHOW CREATE SCHEMA address;
 
 -- Use JOIN to display the first and last names, as well as the address, of each staff member. Use the tables staff and address:
 SELECT staff.first_name , staff.last_name, address.address
